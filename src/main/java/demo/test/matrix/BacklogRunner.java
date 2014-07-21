@@ -24,15 +24,11 @@ public class BacklogRunner extends Runner {
 
 	public BacklogRunner(Class<?> aClass) {
 		fTestClass = new TestClass(aClass);
+		filterFields(aClass);
+		filterMethods(aClass, aClass.getDeclaredMethods());
+	}
 
-		Field[] allField = aClass.getDeclaredFields();
-		for (int i = 0; i < allField.length; i++) {
-			if (allField[i].getAnnotation(Rule.class) != null) {
-				fieldList.add(allField[i]);
-			}
-		}
-
-		Method[] classMethods = aClass.getDeclaredMethods();
+	private void filterMethods(Class<?> aClass, Method[] classMethods) {
 		for (int i = 0; i < classMethods.length; i++) {
 			Method classMethod = classMethods[i];
 			int length = classMethod.getParameterTypes().length;
@@ -53,6 +49,15 @@ public class BacklogRunner extends Runner {
 			if (classMethod.getAnnotation(Test.class) != null && backlog != null) {
 				BacklogModel newBacklog = new BacklogModel(backlog.name(), aClass.getName(), classMethod.getName());
 				backlogList.add(newBacklog);
+			}
+		}
+	}
+
+	private void filterFields(Class<?> aClass) {
+		Field[] allField = aClass.getDeclaredFields();
+		for (int i = 0; i < allField.length; i++) {
+			if (allField[i].getAnnotation(Rule.class) != null) {
+				fieldList.add(allField[i]);
 			}
 		}
 	}
